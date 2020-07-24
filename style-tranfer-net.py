@@ -1,6 +1,6 @@
 import numpy as np
 import tensorflow as tf
-from tensorflow.keras.backend as K
+from tensorflow.keras import backend as K
 from tensorflow.keras.models import Model
 from tensorflow.keras.applications.vgg16 import VGG16
 import cv2
@@ -16,25 +16,30 @@ IMAGE_WIDTH = 400
 IMAGE_HEIGHT = 300
 STYLE_WIDTH = 500
 STYLE_HEIGHT = 400
-IMAGENET_MEAN_RGB_VALUES = [123.68, 116.779, 103.939]
-CONTENT_WEIGHT = 0.02
-STYLE_WEIGHT = 4.5
+MEAN_BGR_VALUES = [123.68, 116.779, 103.939]
+CONTENT_WEIGHT = 0.07
+STYLE_WEIGHT = 7
 TOTAL_VARIATION_WEIGHT = 0.995
 TOTAL_VARIATION_LOSS_FACTOR = 1.25
 
 input_image_array = cv2.imread("content.jpg").astype(np.float64)
 input_image_array = cv2.resize(input_image_array,(400,300))
-input_image_array = np.expand_dims(input_image_array,axis=0)
-input_image_array[:,:,:,0] -= IMAGENET_MEAN_RGB_VALUES[0]
-input_image_array[:,:,:,1] -= IMAGENET_MEAN_RGB_VALUES[1]
-input_image_array[:,:,:,2] -= IMAGENET_MEAN_RGB_VALUES[2]
-
 style_image_array = cv2.imread("style.jpg").astype(np.float64)
 style_image_array = cv2.resize(style_image_array,(400,300))
+
+intermidiate = (input_image_array+style_image_array)/2 
+MEAN_BGR_VALUES = list(intermidiate[:,:,i].mean() for i in range(3))
+print(MEAN_BGR_VALUES)
+input_image_array = np.expand_dims(input_image_array,axis=0)
+input_image_array[:,:,:,0] -= MEAN_BGR_VALUES[0]
+input_image_array[:,:,:,1] -= MEAN_BGR_VALUES[1]
+input_image_array[:,:,:,2] -= MEAN_BGR_VALUES[2]
+
+
 style_image_array = np.expand_dims(style_image_array,axis=0)
-style_image_array[:,:,:,0] -= IMAGENET_MEAN_RGB_VALUES[0]
-style_image_array[:,:,:,1] -= IMAGENET_MEAN_RGB_VALUES[1]
-style_image_array[:,:,:,2] -= IMAGENET_MEAN_RGB_VALUES[2]
+style_image_array[:,:,:,0] -= MEAN_BGR_VALUES[0]
+style_image_array[:,:,:,1] -= MEAN_BGR_VALUES[1]
+style_image_array[:,:,:,2] -= MEAN_BGR_VALUES[2]
 
 input_image = K.variable(input_image_array)
 style_image = K.variable(style_image_array)
@@ -83,41 +88,30 @@ def total_variation_loss(x):
 
 loss = loss + TOTAL_VARIATION_WEIGHT * total_variation_loss(combination_image)
 
-
-def evaluate_loss_and_gradients(x):
-    global loss, combination_image
-    x = x.reshape((1, IMAGE_HEIGHT, IMAGE_WIDTH, CHANNELS))
-    outputs= [loss, K.gradients(loss ,[combination_image])[0]]
-    if DEBUG:
-        print("loss",loss)
-        print("combination_image",combination_image)
-        print("x",x)
-        print("grad",outputs[1],"end")
-    outs = K.function([combination_image],outputs)(K.variable(x,name="inti"))
-    los = outs[0]
-    gradients = outs[1].flatten().astype("float64")
-    return los , gradients
-
-class Evaluator:
-
-    def loss(self,x):
-        los, gradients = evaluate_loss_and_gradients(x)
-        self._gradients = gradients
-        return los
-
-    def gradients(self, x):
-        return self._gradients
-
-evaluator = Evaluator()
-
+outputs= [loss, K.gradients(loss ,[combination_image])[0]]
+if DEBUG:
+    print("loss",loss)
+    print("combination_image",combination_image)
+    print("x",x)
+    print("grad",outputs[1],"end")
+loss_and_gradients = lambda x : K.function([combination_image],outputs)(x.reshape((1, IMAGE_HEIGHT, IMAGE_WIDTH, CHANNELS)))
+    
 x = np.random.uniform(0, 255, (1, IMAGE_HEIGHT, IMAGE_WIDTH, 3)) - 128.
+class Eval:
+    def loss(self, x):
+        los,gradients = loss_and_gradients(x)
+        self.grad = gradients.flatten().astype("float64")
+        return los
+    def gradients(self, x):
+        return self.grad
 
-for i in range(ITERATIONS):
-    x, los, info = fmin_l_bfgs_b(evaluator.loss, x.flatten(), fprime=evaluator.gradients , maxfun=20)
+evaluate = Eval()
+for i in range(ITERATIONS): 
+    x, los, info = fmin_l_bfgs_b(evaluate.loss , x.flatten(), fprime=evaluate.gradients , maxfun=20)
     y = x.reshape((IMAGE_HEIGHT, IMAGE_WIDTH, CHANNELS))
-    y[:,:,0] +=IMAGENET_MEAN_RGB_VALUES[0]
-    y[:,:,1] +=IMAGENET_MEAN_RGB_VALUES[1]
-    y[:,:,2] +=IMAGENET_MEAN_RGB_VALUES[2]
+    y[:,:,0] += MEAN_BGR_VALUES[0]
+    y[:,:,1] += MEAN_BGR_VALUES[1]
+    y[:,:,2] += MEAN_BGR_VALUES[2]
     y = np.clip(y, 0, 255).astype("uint8")
     cv2.imwrite("outputs/combined"+str(i)+".jpg", y)
     print("The "+str(i)+" Iteration has completed with loss:"+str(los))
