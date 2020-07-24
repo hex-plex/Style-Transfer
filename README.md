@@ -14,21 +14,21 @@ I have tried keeping the same content to experiment with the hyperparameters of 
 </tr>
 <tr>
 	<td><a id="first">1</a></td>
-	<td><img src="/content.jpg" width="200" /></td>
-	<td><img src="/style.jpg" width="200" /></td>
-	<td><img src="/outputs/combined2.jpg" width="200" /></td>
+	<td><img src="/content.jpg" width="250" /></td>
+	<td><img src="/style.jpg" width="250" /></td>
+	<td><img src="/outputs/combined2.jpg" width="250" /></td>
 </tr>
 <tr>
 	<td><a id="second">2</a></td>
-	<td><img src="/content.jpg" width="200" /></td>
-	<td><img src="/style2.jpg"  width="200" /></td>
-	<td><img src="/outputs-2/combined0.jpg" width="200" /></td>
+	<td><img src="/content.jpg" width="250" /></td>
+	<td><img src="/style2.jpg"  width="250" /></td>
+	<td><img src="/outputs-2/combined0.jpg" width="250" /></td>
 </tr>
 <tr>
 	<td><a id="third">3</a></td>
-	<td><img src="/content.jpg"  width="200" /></td>
-	<td><img src="/style3.jpg"  width="200" /></td>
-	<td><img src="/outputs-3/combined1.jpg" width="200" /></td>
+	<td><img src="/content.jpg"  width="250" /></td>
+	<td><img src="/style3.jpg"  width="250" /></td>
+	<td><img src="/outputs-3/combined1.jpg" width="250" /></td>
 </tr>
 </table>
 
