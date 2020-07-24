@@ -12,20 +12,20 @@ DEBUG=False
 ITERATIONS = 15
 CHANNELS = 3
 IMAGE_SIZE = 500
-IMAGE_WIDTH = 400
-IMAGE_HEIGHT = 300
-STYLE_WIDTH = 500
-STYLE_HEIGHT = 400
+IMAGE_WIDTH = 1000
+IMAGE_HEIGHT = 750
+STYLE_WIDTH = 1920
+STYLE_HEIGHT = 1080
 MEAN_BGR_VALUES = [123.68, 116.779, 103.939]
 CONTENT_WEIGHT = 0.07
-STYLE_WEIGHT = 7
+STYLE_WEIGHT = 2.5
 TOTAL_VARIATION_WEIGHT = 0.995
 TOTAL_VARIATION_LOSS_FACTOR = 1.25
 
 input_image_array = cv2.imread("content.jpg").astype(np.float64)
-input_image_array = cv2.resize(input_image_array,(400,300))
-style_image_array = cv2.imread("style.jpg").astype(np.float64)
-style_image_array = cv2.resize(style_image_array,(400,300))
+input_image_array = cv2.resize(input_image_array,(1000,750))
+style_image_array = cv2.imread("style2.jpg").astype(np.float64)
+style_image_array = cv2.resize(style_image_array,(1000,750))
 
 intermidiate = (input_image_array+style_image_array)/2 
 MEAN_BGR_VALUES = list(intermidiate[:,:,i].mean() for i in range(3))
@@ -113,5 +113,5 @@ for i in range(ITERATIONS):
     y[:,:,1] += MEAN_BGR_VALUES[1]
     y[:,:,2] += MEAN_BGR_VALUES[2]
     y = np.clip(y, 0, 255).astype("uint8")
-    cv2.imwrite("outputs/combined"+str(i)+".jpg", y)
+    cv2.imwrite("outputs-2/combined"+str(i)+".jpg", y)
     print("The "+str(i)+" Iteration has completed with loss:"+str(los))
