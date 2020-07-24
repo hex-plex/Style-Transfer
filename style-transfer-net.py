@@ -9,7 +9,7 @@ from scipy.optimize import fmin_l_bfgs_b
 
 DEBUG=False
 
-ITERATIONS = 5
+ITERATIONS = 3
 CHANNELS = 3
 IMAGE_SIZE = 500
 IMAGE_WIDTH = 400
@@ -17,9 +17,9 @@ IMAGE_HEIGHT = 300
 STYLE_WIDTH = 1920
 STYLE_HEIGHT = 1080
 MEAN_BGR_VALUES = [123.68, 116.779, 103.939]
-CONTENT_WEIGHT = 0.03
-STYLE_WEIGHT = 7
-TOTAL_VARIATION_WEIGHT = 0.7
+CONTENT_WEIGHT = 0.02
+STYLE_WEIGHT = 15
+TOTAL_VARIATION_WEIGHT = 0.995
 TOTAL_VARIATION_LOSS_FACTOR = 1.25
 
 input_image_array = cv2.imread("content.jpg").astype(np.float64)
@@ -107,7 +107,7 @@ class Eval:
 
 evaluate = Eval()
 for i in range(ITERATIONS): 
-    x, los, info = fmin_l_bfgs_b(evaluate.loss , x.flatten(), fprime=evaluate.gradients, maxfun=500)
+    x, los, info = fmin_l_bfgs_b(evaluate.loss , x.flatten(), fprime=evaluate.gradients, maxfun=5000)
     y = x.reshape((IMAGE_HEIGHT, IMAGE_WIDTH, CHANNELS))
     y[:,:,0] += MEAN_BGR_VALUES[0]
     y[:,:,1] += MEAN_BGR_VALUES[1]
