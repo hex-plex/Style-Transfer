@@ -18,13 +18,13 @@ STYLE_WIDTH = 1920
 STYLE_HEIGHT = 1080
 MEAN_BGR_VALUES = [123.68, 116.779, 103.939]
 CONTENT_WEIGHT = 0.02
-STYLE_WEIGHT = 30
+STYLE_WEIGHT = 25
 TOTAL_VARIATION_WEIGHT = 0.995
 TOTAL_VARIATION_LOSS_FACTOR = 1.25
 
 input_image_array = cv2.imread("content.jpg").astype(np.float64)
 input_image_array = cv2.resize(input_image_array,(400,300))
-style_image_array = cv2.imread("style3.jpg").astype(np.float64)
+style_image_array = cv2.imread("style.jpg").astype(np.float64)
 style_image_array = cv2.resize(style_image_array,(400,300))
 
 intermidiate = (input_image_array+style_image_array)/2 
@@ -107,11 +107,11 @@ class Eval:
 
 evaluate = Eval()
 for i in range(ITERATIONS): 
-    x, los, info = fmin_l_bfgs_b(evaluate.loss , x.flatten(), fprime=evaluate.gradients, maxfun=5000)
+    x, los, info = fmin_l_bfgs_b(evaluate.loss , x.flatten(), fprime=evaluate.gradients, maxfun=1000)
     y = x.reshape((IMAGE_HEIGHT, IMAGE_WIDTH, CHANNELS))
     y[:,:,0] += MEAN_BGR_VALUES[0]
     y[:,:,1] += MEAN_BGR_VALUES[1]
     y[:,:,2] += MEAN_BGR_VALUES[2]
     y = np.clip(y, 0, 255).astype("uint8")
-    cv2.imwrite("outputs-3/combined"+str(i)+".jpg", y)
+    cv2.imwrite("outputs/combined"+str(i)+".jpg", y)
     print("The "+str(i)+" Iteration has completed with loss:"+str(los))
