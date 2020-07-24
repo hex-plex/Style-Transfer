@@ -13,19 +13,25 @@ I have tried keeping the same content to experiment with the hyperparameters of 
 	<th>Output</th>
 </tr>
 <tr>
-	<td>### 1</td>
+	<td>
+	### 1
+	</td>
 	<td><img src="/content.jpg"/></td>
 	<td><img src="/style.jpg"/></td>
 	<td></td>
 </tr>
 <tr>
-	<td>### 2</td>
+	<td> 
+	### 2
+	</td>
 	<td><img src="/content.jpg"/></td>
 	<td><img src="/style2.jpg"/></td>
 	<td></td>
 </tr>
 <tr>
-	<td>### 3</td>
+	<td>
+	### 3
+	</td>
 	<td><img src="/content.jpg"/></td>
 	<td><img src="/style3.jpg"/></td>
 	<td></td>
