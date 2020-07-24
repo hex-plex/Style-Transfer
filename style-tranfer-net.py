@@ -7,6 +7,8 @@ import cv2
 
 from scipy.optimize import fmin_l_bfgs_b
 
+DEBUG=FALSE
+
 ITERATIONS = 15
 CHANNELS = 3
 IMAGE_SIZE = 500
@@ -86,12 +88,13 @@ loss = loss + TOTAL_VARIATION_WEIGHT * total_variation_loss(combination_image)
 
 def evaluate_loss_and_gradients(x):
     global loss, combination_image
-    #print("loss",loss)
-    #print("combination_image",combination_image)
-    #print("x",x)
     x = x.reshape((1, IMAGE_HEIGHT, IMAGE_WIDTH, CHANNELS))
     outputs= [loss, backend.gradients(loss ,[combination_image])[0]]
-    #print("grad",outputs[1],"end")
+    if DEBUG:
+        print("loss",loss)
+        print("combination_image",combination_image)
+        print("x",x)
+        print("grad",outputs[1],"end")
     outs = backend.function([combination_image],outputs)(backend.variable(x,name="inti"))
     los = outs[0]
     gradients = outs[1].flatten().astype("float64")
