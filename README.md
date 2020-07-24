@@ -14,20 +14,20 @@ I have tried keeping the same content to experiment with the hyperparameters of 
 </tr>
 <tr>
 	<td><a id="first">1</a></td>
-	<td><img src="/content.jpg" width="150" /></td>
-	<td><img src="/style.jpg" width="150" /></td>
+	<td><img src="/content.jpg" width="25%" /></td>
+	<td><img src="/style.jpg" width="25%" /></td>
 	<td></td>
 </tr>
 <tr>
 	<td><a id="second">2</a></td>
-	<td><img src="/content.jpg" width="150" /></td>
-	<td><img src="/style2.jpg"  width="150" /></td>
+	<td><img src="/content.jpg" width="25%" /></td>
+	<td><img src="/style2.jpg"  width="25%" /></td>
 	<td></td>
 </tr>
 <tr>
 	<td><a id="third">3</a></td>
-	<td><img src="/content.jpg"  width="150" /></td>
-	<td><img src="/style3.jpg"  width="150" /></td>
+	<td><img src="/content.jpg"  width="25%" /></td>
+	<td><img src="/style3.jpg"  width="25%" /></td>
 	<td></td>
 </tr>
 </table>
