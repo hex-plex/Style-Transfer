@@ -35,7 +35,7 @@ style_image_array[:,:,:,2] -= IMAGENET_MEAN_RGB_VALUES[2]
 
 input_image = backend.variable(input_image_array)
 style_image = backend.variable(style_image_array)
-combination_image = backend.placeholder((1,IMAGE_HEIGHT, IMAGE_WIDTH, 3))
+combination_image = backend.placeholder(shape=(1,IMAGE_HEIGHT, IMAGE_WIDTH, 3),name="c_img")
 
 input_tensor =  backend.concatenate([input_image, style_image, combination_image], axis=0)
 
@@ -53,7 +53,7 @@ content_image_features = layer_features[0,:,:,:]
 combination_features = layer_features[2,:,:,:]
 
 loss = backend.variable(0.)
-loss.assign_add(CONTENT_WEIGHT*content_loss(content_image_features, combination_features))
+loss = loss + CONTENT_WEIGHT*content_loss(content_image_features, combination_features)
 
 def gram_matrix(x):
     features = backend.batch_flatten(backend.permute_dimensions(x, (2,0,1)))
@@ -72,7 +72,7 @@ for layer_name in style_layers:
     style_features = layer_features[1,:,:,:]
     combination_features = layer_features[2,:,:,:]
     style_loss = compute_style_loss(style_features,combination_features)
-    loss.assign_add((STYLE_WEIGHT / len(style_layers)) * style_loss)
+    loss = loss + (STYLE_WEIGHT / len(style_layers)) * style_loss
 
 def total_variation_loss(x):
     a = backend.square(x[:, :IMAGE_HEIGHT-1, :IMAGE_WIDTH-1, :] - x[:, 1:, :IMAGE_WIDTH-1, :])
@@ -80,17 +80,21 @@ def total_variation_loss(x):
 
     return backend.sum(backend.pow(a+b, TOTAL_VARIATION_LOSS_FACTOR))
 
-loss.assign_add(TOTAL_VARIATION_WEIGHT * total_variation_loss(combination_image))
+loss = loss + TOTAL_VARIATION_WEIGHT * total_variation_loss(combination_image)
 
-outputs = [loss]
-outputs += backend.gradients(loss, combination_image)
 
 def evaluate_loss_and_gradients(x):
+    global loss, combination_image
+    #print("loss",loss)
+    #print("combination_image",combination_image)
+    #print("x",x)
     x = x.reshape((1, IMAGE_HEIGHT, IMAGE_WIDTH, CHANNELS))
-    outs = backend.function([combination_image],outputs)([x])
-    loss = outs[0]
+    outputs= [loss, backend.gradients(loss ,model.input)[0]]
+    #print("grad",outputs[1],"end")
+    outs = backend.function([combination_image],outputs)(backend.variable(x,name="inti"))
+    los = outs[0]
     gradients = outs[1].flatten().astype("float64")
-    return loss, gradients
+    return los , gradients
 
 class Evaluator:
 
@@ -104,7 +108,7 @@ class Evaluator:
 
 evaluator = Evaluator()
 
-x = np.random.uniform(0, 255, (1,IMAGE_HEIGHT,IMAGE_WIDTH, 3)) -128.
+x = np.random.uniform(0, 255, (1, IMAGE_HEIGHT, IMAGE_WIDTH, 3)) - 128.
 
 for i in range(ITERATIONS):
     x, loss, info = fmin_l_bfgs_b(evaluator.loss, x.flatten(), fprime=evaluator.gradients , maxfun=20)
