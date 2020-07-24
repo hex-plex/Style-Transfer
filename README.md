@@ -4,7 +4,8 @@ This is a piece of code which optimizes a given( if not given then random) image
 I have used just the Tensorflow Keras backend so that the computations could be done with the help of multiple threads (or GPU) and used scipy's **fmin_l_bfgs_b** which just implements an advanced version of newtons formula for roots. But rather here it finds roots for the derivative of the loss function which should corresponds to its minima (most probably).
 <br/>
 ## Demo
-I have tried keeping the same content to experiment with the hyperparameters of the style loss.
+I have tried keeping the same content to experiment with the hyperparameters of the style loss.<br/>
+Here the images produced are with very low no of iterations(~1000-3000 s).
 <table>
 <tr>
 	<th>Sl no.</th>
