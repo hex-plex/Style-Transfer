@@ -91,3 +91,26 @@ def evaluate_loss_and_gradients(x):
     gradients = outs[1].flatten().astype("float64")
     return loss, gradients
 
+class Evaluator:
+
+    def loss(self,x):
+        loss, gradients = evaluate_loss_and_gradients(x)
+        self._gradients = gradients
+        return loss
+
+    def gradients(self, x):
+        return self._gradients
+
+evaluator = Evaluator()
+
+x = np.random.uniform(0, 255, (1,IMAGE_HEIGHT,IMAGE_WIDTH, 3)) -128.
+
+for i in range(ITERATIONS):
+    x, loss, info = fmin_l_bfgs_b(evaluator.loss, x.flatten(), fprime=evaluator.gradients , maxfun=20)
+    y = x.reshape((IMAGE_HEIGHT, IMAGE_WIDTH, CHANNELS))
+    y[:,:,0] +=IMAGENET_MEAN_RGB_VALUES[0]
+    y[:,:,1] +=IMAGENET_MEAN_RGB_VALUES[1]
+    y[:,:,2] +=IMAGENET_MEAN_RGB_VALUES[2]
+    y = np.clip(y, 0, 255).astype("uint8")
+    cv2.imwrite("combined"+str(i)+".jpg", y)
+    
