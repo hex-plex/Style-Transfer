@@ -1,13 +1,13 @@
 import numpy as np
 import tensorflow as tf
-from tensorflow.keras import backend
+from tensorflow.keras.backend as K
 from tensorflow.keras.models import Model
 from tensorflow.keras.applications.vgg16 import VGG16
 import cv2
 
 from scipy.optimize import fmin_l_bfgs_b
 
-DEBUG=FALSE
+DEBUG=False
 
 ITERATIONS = 15
 CHANNELS = 3
@@ -36,17 +36,17 @@ style_image_array[:,:,:,0] -= IMAGENET_MEAN_RGB_VALUES[0]
 style_image_array[:,:,:,1] -= IMAGENET_MEAN_RGB_VALUES[1]
 style_image_array[:,:,:,2] -= IMAGENET_MEAN_RGB_VALUES[2]
 
-input_image = backend.variable(input_image_array)
-style_image = backend.variable(style_image_array)
-combination_image = backend.placeholder(shape=(1,IMAGE_HEIGHT, IMAGE_WIDTH, 3),name="c_img")
+input_image = K.variable(input_image_array)
+style_image = K.variable(style_image_array)
+combination_image = K.placeholder(shape=(1,IMAGE_HEIGHT, IMAGE_WIDTH, 3),name="c_img")
 
-input_tensor =  backend.concatenate([input_image, style_image, combination_image], axis=0)
+input_tensor =  K.concatenate([input_image, style_image, combination_image], axis=0)
 
 model = VGG16(input_tensor=input_tensor, include_top=False)
 
 
 def content_loss(content, combination):
-    return backend.sum(backend.square(combination - content))
+    return K.sum(K.square(combination - content))
 
 layers = dict([(layer.name, layer.output) for layer in model.layers])
 
@@ -55,19 +55,19 @@ layer_features = layers[content_layer]
 content_image_features = layer_features[0,:,:,:]
 combination_features = layer_features[2,:,:,:]
 
-loss = backend.variable(0.)
+loss = K.variable(0.)
 loss = loss + CONTENT_WEIGHT*content_loss(content_image_features, combination_features)
 
 def gram_matrix(x):
-    features = backend.batch_flatten(backend.permute_dimensions(x, (2,0,1)))
-    gram = backend.dot(features, backend.transpose(features))
+    features = K.batch_flatten(K.permute_dimensions(x, (2,0,1)))
+    gram = K.dot(features, K.transpose(features))
     return gram
 
 def compute_style_loss(style, combination):
     style = gram_matrix(style)
     combination = gram_matrix(combination)
     size = IMAGE_HEIGHT*IMAGE_WIDTH
-    return backend.sum(backend.square(style-combination)) / (4. * (CHANNELS**2) * (size**2))
+    return K.sum(K.square(style-combination)) / (4. * (CHANNELS**2) * (size**2))
 
 style_layers = ["block1_conv2", "block2_conv2", "block3_conv3", "block4_conv3", "block5_conv3"]
 for layer_name in style_layers:
@@ -78,10 +78,10 @@ for layer_name in style_layers:
     loss = loss + (STYLE_WEIGHT / len(style_layers)) * style_loss
 
 def total_variation_loss(x):
-    a = backend.square(x[:, :IMAGE_HEIGHT-1, :IMAGE_WIDTH-1, :] - x[:, 1:, :IMAGE_WIDTH-1, :])
-    b = backend.square(x[:, :IMAGE_HEIGHT-1, :IMAGE_WIDTH-1, :] - x[:, :IMAGE_HEIGHT-1, 1:, :])
+    a = K.square(x[:, :IMAGE_HEIGHT-1, :IMAGE_WIDTH-1, :] - x[:, 1:, :IMAGE_WIDTH-1, :])
+    b = K.square(x[:, :IMAGE_HEIGHT-1, :IMAGE_WIDTH-1, :] - x[:, :IMAGE_HEIGHT-1, 1:, :])
 
-    return backend.sum(backend.pow(a+b, TOTAL_VARIATION_LOSS_FACTOR))
+    return K.sum(K.pow(a+b, TOTAL_VARIATION_LOSS_FACTOR))
 
 loss = loss + TOTAL_VARIATION_WEIGHT * total_variation_loss(combination_image)
 
@@ -89,13 +89,13 @@ loss = loss + TOTAL_VARIATION_WEIGHT * total_variation_loss(combination_image)
 def evaluate_loss_and_gradients(x):
     global loss, combination_image
     x = x.reshape((1, IMAGE_HEIGHT, IMAGE_WIDTH, CHANNELS))
-    outputs= [loss, backend.gradients(loss ,[combination_image])[0]]
+    outputs= [loss, K.gradients(loss ,[combination_image])[0]]
     if DEBUG:
         print("loss",loss)
         print("combination_image",combination_image)
         print("x",x)
         print("grad",outputs[1],"end")
-    outs = backend.function([combination_image],outputs)(backend.variable(x,name="inti"))
+    outs = K.function([combination_image],outputs)(K.variable(x,name="inti"))
     los = outs[0]
     gradients = outs[1].flatten().astype("float64")
     return los , gradients
