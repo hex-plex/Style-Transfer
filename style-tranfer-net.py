@@ -44,9 +44,7 @@ input_tensor =  K.concatenate([input_image, style_image, combination_image], axi
 
 model = VGG16(input_tensor=input_tensor, include_top=False)
 
-
-def content_loss(content, combination):
-    return K.sum(K.square(combination - content))
+content_loss = lambda content,combination : K.sum(K.square(combination - content))
 
 layers = dict([(layer.name, layer.output) for layer in model.layers])
 
