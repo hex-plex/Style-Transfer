@@ -35,11 +35,11 @@ I have tried keeping the same content to experiment with the hyperparameters of 
 ## Hyper-Parameters Analysis
 
 ### Style loss
-The Style weigth should be a moderate value like 7-12 if the style image is has the style in the same form as that in the <a href="#first">first example</a>, Where the both were building but the style had to be partially copied.
+- The Style weigth should be a moderate value like 7-12 if the style image is has the style in the same form as that in the <a href="#first">first example</a>, Where the both were building but the style had to be partially copied.
 <br/>
-The weigth should be pretty low like 3-5 if the style image is only a style template on its on rather that its implemented images.
+- The weigth should be pretty low like 3-5 if the style image is only a style template on its on rather that its implemented images.
 <br/>
-The weigth should be very high like 25-30 if the style is not very distinctive in the image like <a href="#second">second</a> which is just a image of a modern city which I wanted to encapsulate into the old building.
+- The weigth should be very high like 25-30 if the style is not very distinctive in the image like <a href="#second">second</a> which is just a image of a modern city which I wanted to encapsulate into the old building.
 
 ### Content loss
 This one is very simple to understand and has only one hyperparameter, the content weigth which can be put anything below 0.03 as this is the last thing we would want to optimize the image for . This will be automatically be done as the loss relation is linear which would make the algorithm to atleast have its main distinctive features like the outline, the base color and so on.
