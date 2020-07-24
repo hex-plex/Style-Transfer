@@ -12,20 +12,20 @@ DEBUG=False
 ITERATIONS = 15
 CHANNELS = 3
 IMAGE_SIZE = 500
-IMAGE_WIDTH = 1000
-IMAGE_HEIGHT = 750
+IMAGE_WIDTH = 800
+IMAGE_HEIGHT = 600
 STYLE_WIDTH = 1920
 STYLE_HEIGHT = 1080
 MEAN_BGR_VALUES = [123.68, 116.779, 103.939]
-CONTENT_WEIGHT = 0.07
+CONTENT_WEIGHT = 0.15
 STYLE_WEIGHT = 2.5
-TOTAL_VARIATION_WEIGHT = 0.995
+TOTAL_VARIATION_WEIGHT = 0.7
 TOTAL_VARIATION_LOSS_FACTOR = 1.25
 
 input_image_array = cv2.imread("content.jpg").astype(np.float64)
-input_image_array = cv2.resize(input_image_array,(1000,750))
+input_image_array = cv2.resize(input_image_array,(800,600))
 style_image_array = cv2.imread("style2.jpg").astype(np.float64)
-style_image_array = cv2.resize(style_image_array,(1000,750))
+style_image_array = cv2.resize(style_image_array,(800,600))
 
 intermidiate = (input_image_array+style_image_array)/2 
 MEAN_BGR_VALUES = list(intermidiate[:,:,i].mean() for i in range(3))
