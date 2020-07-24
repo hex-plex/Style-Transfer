@@ -7,21 +7,25 @@ I have used just the Tensorflow Keras backend so that the computations could be 
 I have tried keeping the same content to experiment with the hyperparameters of the style loss.
 <table>
 <tr>
+	<th>Sl no.</th>
 	<th>Content</th>
 	<th>Style</th>
 	<th>Output</th>
 </tr>
 <tr>
+	<td>### 1</td>
 	<td><img src="/content.jpg"/></td>
 	<td><img src="/style.jpg"/></td>
 	<td></td>
 </tr>
 <tr>
+	<td>### 2</td>
 	<td><img src="/content.jpg"/></td>
 	<td><img src="/style2.jpg"/></td>
 	<td></td>
 </tr>
 <tr>
+	<td>### 3</td>
 	<td><img src="/content.jpg"/></td>
 	<td><img src="/style3.jpg"/></td>
 	<td></td>
@@ -31,4 +35,4 @@ I have tried keeping the same content to experiment with the hyperparameters of 
 ## Hyper-Parameters Analysis
 
 ### Style loss
-The Style weigth should be a moderate value like 7-12 if the style image is 
+The Style weigth should be a moderate value like 7-12 if the style image is has the style in the same form as that in the 
