@@ -17,10 +17,10 @@ IMAGE_HEIGHT = 600
 STYLE_WIDTH = 1920
 STYLE_HEIGHT = 1080
 MEAN_BGR_VALUES = [123.68, 116.779, 103.939]
-CONTENT_WEIGHT = 0.15
-STYLE_WEIGHT = 2.5
-TOTAL_VARIATION_WEIGHT = 0.7
-TOTAL_VARIATION_LOSS_FACTOR = 1.25
+CONTENT_WEIGHT = 0.02
+STYLE_WEIGHT = 5
+TOTAL_VARIATION_WEIGHT = 0.1
+TOTAL_VARIATION_LOSS_FACTOR = 1.1
 
 input_image_array = cv2.imread("content.jpg").astype(np.float64)
 input_image_array = cv2.resize(input_image_array,(800,600))
@@ -107,7 +107,7 @@ class Eval:
 
 evaluate = Eval()
 for i in range(ITERATIONS): 
-    x, los, info = fmin_l_bfgs_b(evaluate.loss , x.flatten(), fprime=evaluate.gradients , maxfun=20)
+    x, los, info = fmin_l_bfgs_b(evaluate.loss , x.flatten(), fprime=evaluate.gradients , maxfun=10)
     y = x.reshape((IMAGE_HEIGHT, IMAGE_WIDTH, CHANNELS))
     y[:,:,0] += MEAN_BGR_VALUES[0]
     y[:,:,1] += MEAN_BGR_VALUES[1]
