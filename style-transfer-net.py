@@ -12,20 +12,34 @@ DEBUG=False
 ITERATIONS = 3
 CHANNELS = 3
 IMAGE_SIZE = 500
-IMAGE_WIDTH = 400
-IMAGE_HEIGHT = 300
-STYLE_WIDTH = 1920
-STYLE_HEIGHT = 1080
+IMAGE_WIDTH = 500
+IMAGE_HEIGHT = 500
+STYLE_WIDTH = 1280
+STYLE_HEIGHT = 720
 MEAN_BGR_VALUES = [123.68, 116.779, 103.939]
 CONTENT_WEIGHT = 0.02
-STYLE_WEIGHT = 25
+STYLE_WEIGHT = 50
 TOTAL_VARIATION_WEIGHT = 0.995
 TOTAL_VARIATION_LOSS_FACTOR = 1.25
 
-input_image_array = cv2.imread("content.jpg").astype(np.float64)
-input_image_array = cv2.resize(input_image_array,(400,300))
-style_image_array = cv2.imread("style2.jpg").astype(np.float64)
-style_image_array = cv2.resize(style_image_array,(400,300))
+########################################################################
+#config = tf.ConfigProto()
+#config.gpu_options.allow_growth=True
+#sess = tf.Session(config=config)
+#K.set_session(sess) ## This is to utilize maximum of  your resource comment it out if training is done on cpu
+########################################################################
+## If the above doesnt work try using the below
+########################################################################
+gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=1.000)
+sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
+K.set_session(sess)
+#######################################################################
+input_image_array = cv2.imread("content-n.jpg").astype(np.float64)
+input_image_array = input_image_array[:,5:-5,:]
+input_image_array = cv2.resize(input_image_array,(500,500))
+style_image_array = cv2.imread("style-n.jpg").astype(np.float64)
+style_image_array = cv2.copyMakeBorder(style_image_array,280,280,0,0,cv2.BORDER_CONSTANT,value=(0,0,0))
+style_image_array = cv2.resize(style_image_array,(500,500))
 
 intermidiate = (input_image_array+style_image_array)/2 
 MEAN_BGR_VALUES = list(intermidiate[:,:,i].mean() for i in range(3))
@@ -113,5 +127,5 @@ for i in range(ITERATIONS):
     y[:,:,1] += MEAN_BGR_VALUES[1]
     y[:,:,2] += MEAN_BGR_VALUES[2]
     y = np.clip(y, 0, 255).astype("uint8")
-    cv2.imwrite("outputs-2/combined"+str(i)+".jpg", y)
+    cv2.imwrite("outputs-n/combined"+str(i)+".jpg", y)
     print("The "+str(i)+" Iteration has completed with loss:"+str(los))
